@@ -15,7 +15,7 @@ def notify_on_new_checks(api_token, bot, chat_id: int):
             params = {'timestamp': timestamp}
             response = requests.get(url, headers=headers, params=params, timeout=60)
             response.raise_for_status()
-            checks_data = response.json()
+            checks = response.json()
 
         except requests.exceptions.ReadTimeout:
             print('Сервер молчит... повторяем запрос')
@@ -26,16 +26,16 @@ def notify_on_new_checks(api_token, bot, chat_id: int):
             time.sleep(5)
             continue
 
-        status = checks_data.get('status')
+        status = checks.get('status')
         if status == 'found':
-            for attempt in checks_data.get('new_attempts', []):
+            for attempt in checks.get('new_attempts', []):
                 text = (
                     f"Урок: {attempt['lesson_title']}\n"
                     f"{attempt['lesson_url']}\n"
                     f"Статус: {'В работе нашлись ошибки.' if attempt['is_negative'] else 'Всё отлично!'}"
                 )
                 bot.send_message(chat_id=chat_id, text=text)
-            timestamp = checks_data.get('last_attempt_timestamp')
+            timestamp = checks.get('last_attempt_timestamp')
         else:
             timestamp = None
 

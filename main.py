@@ -6,7 +6,7 @@ from telegram import Bot
 from dotenv import load_dotenv
 
 
-def long_polling(api_token, bot, chat_id: int):
+def notify_on_new_checks(api_token, bot, chat_id: int):
     url = "https://dvmn.org/api/long_polling/"
     headers = {'Authorization': f'Token {api_token}'}
     timestamp = None
@@ -56,7 +56,7 @@ def main():
     if chat_id is None:
         parser.error("Не указан TG_CHAT_ID (через --chat-id или .env)")
 
-    long_polling(api_token, bot, int(chat_id))
+    notify_on_new_checks(api_token, bot, int(chat_id))
 
 
 if __name__ == "__main__":

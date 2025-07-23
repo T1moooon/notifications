@@ -6,28 +6,14 @@ from telegram import Bot
 from dotenv import load_dotenv
 
 
-load_dotenv()
-
-
-API_TOKEN = os.getenv('API_TOKEN')
-TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
-TG_CHAT_ID = os.getenv('TG_CHAT_ID')
-
-bot = Bot(token=TG_BOT_TOKEN)
-HEADERS = {'Authorization': f'Token {API_TOKEN}'}
-
-
-def send_message(chat_id: int, text: str):
-    bot.send_message(chat_id=chat_id, text=text)
-
-
-def long_polling(chat_id: int):
+def long_polling(api_token, bot, chat_id: int):
     url = "https://dvmn.org/api/long_polling/"
+    headers = {'Authorization': f'Token {api_token}'}
     timestamp = None
     while True:
         try:
             params = {'timestamp': timestamp}
-            response = requests.get(url, headers=HEADERS, params=params, timeout=60)
+            response = requests.get(url, headers=headers, params=params, timeout=60)
             response.raise_for_status()
             checks_data = response.json()
 
@@ -48,13 +34,18 @@ def long_polling(chat_id: int):
                     f"{attempt['lesson_url']}\n"
                     f"Статус: {'В работе нашлись ошибки.' if attempt['is_negative'] else 'Всё отлично!'}"
                 )
-                send_message(chat_id, text)
+                bot.send_message(chat_id=chat_id, text=text)
             timestamp = checks_data.get('last_attempt_timestamp')
         else:
             timestamp = None
 
 
 def main():
+    load_dotenv()
+    api_token = os.getenv('API_TOKEN')
+    tg_bot_token = os.getenv('TG_BOT_TOKEN')
+    tg_chat_id = os.getenv('TG_CHAT_ID')
+    bot = Bot(token=tg_bot_token)
     parser = argparse.ArgumentParser(description="Telegram-бот для уведомлений о проверках")
     parser.add_argument(
         "--chat-id",
@@ -62,11 +53,11 @@ def main():
         help="ID Telegram-чата для отправки сообщений"
     )
     args = parser.parse_args()
-    chat_id = args.chat_id or os.getenv('TG_CHAT_ID')
+    chat_id = args.chat_id or tg_chat_id
     if chat_id is None:
         parser.error("Не указан TG_CHAT_ID (через --chat-id или .env)")
 
-    long_polling(int(chat_id))
+    long_polling(api_token, bot, int(chat_id))
 
 
 if __name__ == "__main__":

@@ -42,9 +42,8 @@ def long_polling(api_token, bot, chat_id: int):
 
 def main():
     load_dotenv()
-    api_token = os.getenv('API_TOKEN')
-    tg_bot_token = os.getenv('TG_BOT_TOKEN')
-    tg_chat_id = os.getenv('TG_CHAT_ID')
+    api_token = os.environ['API_TOKEN']
+    tg_bot_token = os.environ['TG_BOT_TOKEN']
     bot = Bot(token=tg_bot_token)
     parser = argparse.ArgumentParser(description="Telegram-бот для уведомлений о проверках")
     parser.add_argument(
@@ -53,7 +52,7 @@ def main():
         help="ID Telegram-чата для отправки сообщений"
     )
     args = parser.parse_args()
-    chat_id = args.chat_id or tg_chat_id
+    chat_id = args.chat_id or os.getenv('TG_CHAT_ID')
     if chat_id is None:
         parser.error("Не указан TG_CHAT_ID (через --chat-id или .env)")
 

@@ -21,11 +21,10 @@
 
 3. **Запуск**:
     ```bash
-    python main.py [--chat-id <ваш_chat_id>]
+    python main.py
     ```
-    Если `--chat-id` не передан — используется значение из `.env`.
 
 ##  Пример запуска
 
 ```bash
-python main.py --chat-id 123456789
+python main.py

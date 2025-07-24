@@ -1,7 +1,6 @@
 import requests
 import time
 import os
-import argparse
 from telegram import Bot
 from dotenv import load_dotenv
 
@@ -42,17 +41,8 @@ def main():
     load_dotenv()
     api_token = os.environ['API_TOKEN']
     tg_bot_token = os.environ['TG_BOT_TOKEN']
+    chat_id = os.environ['TG_CHAT_ID']
     bot = Bot(token=tg_bot_token)
-    parser = argparse.ArgumentParser(description="Telegram-бот для уведомлений о проверках")
-    parser.add_argument(
-        "--chat-id",
-        type=int,
-        help="ID Telegram-чата для отправки сообщений"
-    )
-    args = parser.parse_args()
-    chat_id = args.chat_id or os.getenv('TG_CHAT_ID')
-    if chat_id is None:
-        parser.error("Не указан TG_CHAT_ID (через --chat-id или .env)")
 
     notify_on_new_checks(api_token, bot, int(chat_id))
 

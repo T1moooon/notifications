@@ -18,11 +18,9 @@ def notify_on_new_checks(api_token, bot, chat_id: int):
             checks = response.json()
 
         except requests.exceptions.ReadTimeout:
-            print('Сервер молчит... повторяем запрос')
             continue
 
         except requests.exceptions.ConnectionError:
-            print('Нет интернета, ждем 5 секунд...')
             time.sleep(5)
             continue
 
